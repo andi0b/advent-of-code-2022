@@ -8,30 +8,29 @@ open Xunit
 type Item = char
 
 module Item =
-    let getPriority (item: Item) =
-        if Char.IsLower(item) then (int item) - (int 'a') + 1
-        elif Char.IsUpper(item) then (int item) - (int 'A') + 27
-        else failwith "Unknown Item"
+    let getPriority =
+        function
+        | i when Char.IsLower(i) -> (int i) - (int 'a') + 1
+        | i when Char.IsUpper(i) -> (int i) - (int 'A') + 27
+        | _ -> failwith "Unknown Item"
 
 type Rucksack = Item array
 
 module Rucksack =
     let parse (str: string) = str.ToCharArray()
+    let getCompartmentsContent = Array.splitInto 2
 
-    let getCompartments (rucksack: Rucksack) =
-        (rucksack[0 .. rucksack.Length / 2 - 1], rucksack[rucksack.Length / 2 ..])
+    let commonCompartmentItems =
+        getCompartmentsContent >> Array.map Set.ofArray >> Set.intersectMany
 
-    let intersectCompartments rucksack =
-        let c1, c2 = getCompartments rucksack
-        Set.intersect (Set.ofArray c1) (Set.ofArray c2)
+let part1 (rucksacks: Rucksack seq) =
+    rucksacks
+    |> Seq.sumBy (Rucksack.commonCompartmentItems >> Seq.sumBy Item.getPriority)
 
-let part1 =
-    Array.sumBy (fun r -> Rucksack.intersectCompartments r |> Seq.sumBy Item.getPriority)
-
-let part2 (rucksacks: Rucksack array) =
+let part2 (rucksacks: Rucksack seq) =
     let elfSquads = rucksacks |> Seq.chunkBySize 3
-    let badgeForSquad = Array.map Set.ofSeq >> Set.intersectMany >> Seq.exactlyOne
-    elfSquads |> Seq.sumBy (badgeForSquad >> Item.getPriority)
+    let findSquadBadge = Seq.map Set.ofSeq >> Set.intersectMany >> Seq.exactlyOne
+    elfSquads |> Seq.sumBy (findSquadBadge >> Item.getPriority)
 
 let run () =
     let input = File.ReadAllLines("inputs/day03.txt") |> Array.map Rucksack.parse
