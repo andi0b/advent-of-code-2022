@@ -2,8 +2,6 @@
 
 open System
 open System.IO
-open Swensen.Unquote
-open Xunit
 open FSharp.Text.RegexProvider
 
 type Move =
@@ -67,6 +65,9 @@ let run () =
     $"Part 1: {input ||> part1} Part2: {input ||> part2}"
 
 module tests =
+    open Swensen.Unquote
+    open Xunit
+
     let example =
         """    [D]    
 [N] [C]    
