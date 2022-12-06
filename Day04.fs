@@ -9,7 +9,7 @@ open FSharp.Text.RegexProvider
 type Assignment = int * int
 type Pair = Assignment * Assignment
 
-type PairRegex = Regex<"^(\d*)-(\d*),(\d*)-(\d*)$">
+type PairRegex = Regex< @"^(\d*)-(\d*),(\d*)-(\d*)$" >
 
 module Pair =
     let parse (str: string) : Pair =
