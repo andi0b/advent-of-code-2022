@@ -23,22 +23,23 @@ module Vector =
 
     let sameRowOrColumn (x1, y1) (x2, y2) = x1 = x2 || y1 = y2
 
-    let straightDirections = [| (1, 0); (-1, 0); (0, 1); (0, -1) |]
-    let diagonalDirections = [| (1, 1); (-1, -1); (-1, 1); (1, -1) |]
-
 let findNewTail newHead oldTail =
-    seq {
-        yield oldTail
+    let newTailCandidates =
+        seq {
+            yield oldTail
 
-        let directions =
-            if Vector.sameRowOrColumn oldTail newHead then
-                Vector.straightDirections
-            else
-                Vector.diagonalDirections
+            yield!
+                if Vector.sameRowOrColumn oldTail newHead then
+                    [| (1, 0); (-1, 0); (0, 1); (0, -1) |] // straight
+                else
+                    [| (1, 1); (-1, -1); (-1, 1); (1, -1) |] // diagonal
+                |> Array.map (Vector.add oldTail)
+        }
 
-        yield! directions |> Array.map (Vector.add oldTail)
-    }
-    |> Seq.find (fun nt -> nt |> Vector.touches newHead && nt |> Vector.touches oldTail)
+    let (>>&) f g x = f x && g x
+
+    newTailCandidates
+    |> Seq.find (Vector.touches newHead >>& Vector.touches oldTail)
 
 let move (segments: (int * int) list) (Instruction(ix, iy)) =
     let newHead = segments.Head |> Vector.add (ix, iy)
@@ -46,9 +47,7 @@ let move (segments: (int * int) list) (Instruction(ix, iy)) =
 
 let solve ropeLength instructions =
     let startSegments = (0, 0) |> List.replicate ropeLength
-
     let allPositions = (startSegments, instructions) ||> Array.scan move
-
     allPositions |> Seq.map List.last |> Seq.distinct |> Seq.length
 
 let part1 = solve 2
