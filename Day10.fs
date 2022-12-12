@@ -4,12 +4,6 @@ open System
 
 type CpuState = { X: int }
 
-let (|Prefix|_|) (p: string) (s: string) =
-    if s.StartsWith(p) then
-        Some(s.Substring(p.Length))
-    else
-        None
-
 let (|AddX|Noop|Unknown|) str =
     match str with
     | "noop" -> Noop
@@ -42,11 +36,11 @@ let part2 instructions =
     let output =
         states
         |> Array.skip 0
-        |> Array.mapi (fun i { X = x } -> if (abs (i % 40 - x)) <= 1 then '#' else ' ')
+        |> Array.mapi (fun i { X = x } -> if (abs (i % 40 - x)) <= 1 then "##" else ". ")
 
     output
     |> Array.chunkBySize 40
-    |> Array.map String
+    |> Array.map (Array.reduce (+))
     |> Array.reduce (fun t n -> t + Environment.NewLine + n)
 
 let run () =
