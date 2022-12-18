@@ -1,14 +1,33 @@
-﻿open aoc22
+﻿open System.Threading.Tasks
+open aoc22
 
-printfn $"Day  1: {Day01.run()}"
-printfn $"Day  2: {Day02.run()}"
-printfn $"Day  3: {Day03.run()}"
-printfn $"Day  4: {Day04.run()}"
-printfn $"Day  5: {Day05.run()}"
-printfn $"Day  6: {Day06.run()}"
-printfn $"Day  7: {Day07.run()}"
-printfn $"Day  8: {Day08.run()}"
-printfn $"Day  9: {Day09.run()}"
-printfn $"Day 10: {Day10.run()}"
-printfn $"Day 11: {Day11.run()}"
-printfn $"Day 12: {Day12.run()}"
+let skip = (fun () -> "skipped")
+
+let days =
+    [ Day01.run
+      Day02.run
+      Day03.run
+      Day04.run
+      Day05.run
+      Day06.run
+      Day07.run
+      Day08.run
+      Day09.run
+      Day10.run
+      Day11.run
+      Day12.run
+      skip
+      skip
+      skip
+      skip
+      skip
+      Day18.run ]
+
+let tasks = days |> List.map Task.Run
+
+task {
+    for i, task in tasks |> List.indexed do
+        let! result = task
+        printfn $"Day {i + 1} {result}"
+}
+|> Task.WaitAll
