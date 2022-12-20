@@ -21,13 +21,22 @@ let days =
       skip
       skip
       skip
-      Day18.run ]
+      Day18.run 
+      Day19.run ]
 
-let tasks = days |> List.map Task.Run
+let tasks =
+    days
+    |> List.indexed
+    |> List.map (fun (i, r) ->
+        task {
+            let! result = Task.Run r
+            return (i, result)
+        })
+    |> List.rev
 
 task {
-    for i, task in tasks |> List.indexed do
-        let! result = task
+    for task in tasks do
+        let! i, result = task
         printfn $"Day {i + 1} {result}"
 }
 |> Task.WaitAll

@@ -13,6 +13,16 @@ let tryRegex pattern input =
 
 let (|Regex|_|) pattern input = tryRegex pattern input
 
+let tryRegexG pattern input =
+    let m = Regex.Matches(input, pattern)
+
+    if m.Count > 0 then
+        Some([ for x in m -> x.Value ])
+    else
+        None
+
+let (|RegexG|_|) pattern input = tryRegexG pattern input
+
 let tryPrefix (p: string) (s: string) =
     if s.StartsWith(p) then
         Some(s.Substring(p.Length))
