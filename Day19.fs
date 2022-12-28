@@ -75,7 +75,8 @@ let simulateOneMinute blueprint (Collected c) (Robots r) waitingFor =
 
 let inline triangular (n: int) = n * (n + 1) / 2
 
-let parallelFilter condition = Array.Parallel.choose (fun x -> if condition x then Some x else None)
+let parallelFilter condition =
+    Array.Parallel.choose (fun x -> if condition x then Some x else None)
 
 let rec simulateOneMinuteMany blueprint (states: (Collected * Robots * int list) array) i rounds =
     let remainingMinutes = rounds + 1 - i
@@ -88,7 +89,7 @@ let rec simulateOneMinuteMany blueprint (states: (Collected * Robots * int list)
             let geodeRobots = r |> Materials.geodes
             openedGeodes + geodeRobots * remainingMinutes)
         |> Seq.max
-    
+
     let states' =
         if minimumPossibleGeodes > 0 then
             states
@@ -102,7 +103,8 @@ let rec simulateOneMinuteMany blueprint (states: (Collected * Robots * int list)
     //    $"States reduced by {states.Length - states'.Length}, that don't match minimumPossibleGeodes: {minimumPossibleGeodes}"
 
     let nextStates =
-        states' |> Array.Parallel.collect (fun (c, r, w) -> simulateOneMinute blueprint c r w)
+        states'
+        |> Array.Parallel.collect (fun (c, r, w) -> simulateOneMinute blueprint c r w)
 
     // don't build more lesser robots than we can use up materials of that type in one round
     let robotLimit =
@@ -215,4 +217,4 @@ module tests =
     let ``Part 1`` () = part1 example =! 33
 
     [<Fact>]
-    let ``Part 2`` () = part2 example =! 56*62
+    let ``Part 2`` () = part2 example =! 56 * 62

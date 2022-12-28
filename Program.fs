@@ -22,17 +22,18 @@ let days =
       skip
       skip
       Day18.run 
-      Day19.run ]
+      Day19.run 
+      Day20.run ]
 
 let tasks =
     days
     |> List.indexed
+    |> List.rev
     |> List.map (fun (i, r) ->
         task {
             let! result = Task.Run r
             return (i, result)
         })
-    |> List.rev
 
 task {
     for task in tasks do
